@@ -1,9 +1,22 @@
-import { connectDB } from "../lib/mongodb"
-import { User, LicenseKey, ActivityLog } from "../models"
+import { config } from "dotenv"
+config({ path: `${process.cwd()}/.env.local` })
+
+let connectDB: typeof import("../lib/mongodb").connectDB
+let User: typeof import("../models").User
+let LicenseKey: typeof import("../models").LicenseKey
+let ActivityLog: typeof import("../models").ActivityLog
 import bcrypt from "bcryptjs"
 
 async function seed() {
   console.log("Seeding database...")
+
+  // Dynamic imports after dotenv loads .env.local
+  const mongo = await import("../lib/mongodb")
+  const models = await import("../models")
+  connectDB = mongo.connectDB
+  User = models.User
+  LicenseKey = models.LicenseKey
+  ActivityLog = models.ActivityLog
 
   await connectDB()
 
