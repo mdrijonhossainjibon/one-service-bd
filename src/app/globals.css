@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand gold */
+  --color-brand-50: #FBF8F0;
+  --color-brand-100: #F5ECD6;
+  --color-brand-200: #EBD9AD;
+  --color-brand-300: #DFC184;
+  --color-brand-400: #D4A85B;
+  --color-brand-500: #C49A3C;
+  --color-brand-600: #A67D2E;
+  --color-brand-700: #7D5D22;
+  --color-brand-800: #543D17;
+  --color-brand-900: #2B1E0B;
+
+  /* Surface / cream */
+  --color-surface-50: #F5F3EF;
+  --color-surface-100: #E8E5DE;
+  --color-surface-200: #D5D0C7;
+  --color-surface-300: #B8B1A5;
+  --color-surface-400: #9A9183;
+  --color-surface-500: #7D7364;
+  --color-surface-600: #5E5548;
+  --color-surface-700: #3F372E;
+  --color-surface-800: #201B15;
+  --color-surface-900: #110E0A;
+
+  /* Dark panels */
+  --color-panel-50: #2A2D35;
+  --color-panel-100: #22252C;
+  --color-panel-200: #1A1D23;
+  --color-panel-300: #14161B;
+  --color-panel-400: #111318;
+  --color-panel-500: #0D0F13;
+
+  /* Semantic */
+  --color-success: #2D9F6F;
+  --color-danger: #D94F4F;
+  --color-warning: #E5A43C;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #F5F3EF;
+  --foreground: #1F2028;
+}
+
+.dark {
+  --background: #0D0F13;
+  --foreground: #E8E5DE;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Custom animations/spinners */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.8); }
+}
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: pulse 2s infinite;
+}
+
+.avatar-sm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-brand-100);
+  color: var(--color-brand-700);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-heading);
+  flex-shrink: 0;
 }
