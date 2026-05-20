@@ -336,6 +336,7 @@ export default function DocsPage() {
                   <tr><td><span className="tag-409">409</span></td><td><code>hwid_mismatch</code></td><td>Hardware ID does not match the registered device</td></tr>
                   <tr><td><span className="tag-409">409</span></td><td><code>ip_mismatch</code></td><td>IP address does not match the registered network</td></tr>
                   <tr><td><span className="tag-500">500</span></td><td><code>server_error</code></td><td>Internal server error</td></tr>
+                  <tr><td><span className="tag-503">503</span></td><td><code>maintenance</code></td><td>Service is under maintenance — try again later</td></tr>
                 </tbody>
               </table>
             </div>
@@ -658,7 +659,7 @@ export default function DocsPage() {
         }
 
         /* Tags */
-        .tag-200, .tag-400, .tag-403, .tag-404, .tag-409, .tag-410, .tag-500 {
+        .tag-200, .tag-400, .tag-403, .tag-404, .tag-409, .tag-410, .tag-500, .tag-503 {
           display: inline-block;
           padding: 0.125rem 0.45rem;
           border-radius: 5px;
@@ -674,6 +675,7 @@ export default function DocsPage() {
         .tag-409 { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
         .tag-410 { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
         .tag-500 { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+        .tag-503 { background: rgba(245, 179, 66, 0.12); color: #f5b342; }
 
         /* Code blocks */
         .code-block-wrap {

@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { validateLicenseKey } from "@/lib/db"
+import { isMaintenanceMode } from "@/lib/maintenance"
 
 export async function POST(req: NextRequest) {
   try {
+    if (await isMaintenanceMode()) {
+      return NextResponse.json(
+        { valid: false, error: "maintenance", message: "Service is currently under maintenance. Please try again later." },
+        { status: 503 },
+      )
+    }
+
     const body = await req.json()
     const { key, hwid, ipAddress } = body
 

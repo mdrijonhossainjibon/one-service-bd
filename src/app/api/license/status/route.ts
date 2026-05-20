@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/lib/mongodb"
 import { LicenseKey } from "@/models"
+import { isMaintenanceMode } from "@/lib/maintenance"
+
+export async function GET() {
+  try {
+    if (await isMaintenanceMode()) {
+      return NextResponse.json(
+        { valid: false, error: "maintenance", message: "Service is currently under maintenance. Please try again later." },
+        { status: 503 },
+      )
+    }
+    return NextResponse.json({ error: "Method not allowed. Use POST with a license key." }, { status: 405 })
+  } catch {
+    return NextResponse.json({ error: "Method not allowed. Use POST with a license key." }, { status: 405 })
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
+    if (await isMaintenanceMode()) {
+      return NextResponse.json(
+        { valid: false, error: "maintenance", message: "Service is currently under maintenance. Please try again later." },
+        { status: 503 },
+      )
+    }
+
     const body = await req.json()
     const { key } = body
 
