@@ -2,7 +2,7 @@ import NextAuth, { NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import Google from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
-import { getUserByEmail, getUserById } from "@/lib/db"
+import { getUserByEmail, getUserById, createUserFromOAuth } from "@/lib/db"
 
 export const authConfig: NextAuthConfig = {
   providers: [
@@ -39,6 +39,17 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   callbacks: {
+    async signIn({ account, profile }) {
+      // Google OAuth — find or create user, save avatar
+      if (account?.provider === "google" && profile?.email) {
+        await createUserFromOAuth({
+          name: (profile.name as string) ?? profile.email.split("@")[0],
+          email: profile.email,
+          image: (profile as { picture?: string }).picture,
+        })
+      }
+      return true
+    },
     async jwt({ token, user }) {
       if (user) {
         // Always find user by email to get the correct MongoDB _id

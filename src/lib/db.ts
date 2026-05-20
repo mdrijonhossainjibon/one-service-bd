@@ -94,6 +94,54 @@ export async function createUser(data: {
   }
 }
 
+export async function createUserFromOAuth(data: {
+  name: string
+  email: string
+  image?: string | null
+}) {
+  await connectDB()
+  const existing = await User.findOne({ email: data.email.toLowerCase() })
+  if (existing) {
+    // Update avatar if changed
+    if (data.image && data.image !== existing.avatar) {
+      existing.avatar = data.image
+      await existing.save()
+    }
+    return {
+      id: existing._id.toString(),
+      name: existing.name,
+      email: existing.email,
+      password: existing.password,
+      avatar: existing.avatar,
+      role: existing.role as UserRole,
+      status: existing.status,
+      hwid: existing.hwid,
+      ipAddress: existing.ipAddress,
+      createdAt: existing.joinedAt ? new Date(existing.joinedAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+    }
+  }
+
+  const u = await User.create({
+    name: data.name,
+    email: data.email.toLowerCase(),
+    avatar: data.image ?? "",
+    role: "user",
+  })
+
+  return {
+    id: u._id.toString(),
+    name: u.name,
+    email: u.email,
+    password: u.password,
+    avatar: u.avatar,
+    role: u.role as UserRole,
+    status: u.status,
+    hwid: u.hwid,
+    ipAddress: u.ipAddress,
+    createdAt: u.joinedAt ? new Date(u.joinedAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+  }
+}
+
 export async function updateUserRole(id: string, role: UserRole) {
   await connectDB()
   await User.findByIdAndUpdate(id, { role })

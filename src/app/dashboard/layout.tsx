@@ -148,8 +148,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* User footer */}
         <div className="border-t border-white/5 px-4 py-4">
           <div className="flex items-center gap-3 px-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-500/20 text-sm font-semibold text-brand-400">
-              {session?.user?.name?.[0]?.toUpperCase() || "A"}
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-500/20 text-sm font-semibold text-brand-400 overflow-hidden">
+              {(session?.user as { image?: string })?.image ? (
+                <img src={(session?.user as { image?: string }).image!} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                session?.user?.name?.[0]?.toUpperCase() || "A"
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="truncate text-sm font-medium text-white">
@@ -219,8 +223,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )}
 
             {/* User avatar in header */}
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-xs font-semibold text-white">
-              {session?.user?.name?.[0]?.toUpperCase() || "A"}
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-xs font-semibold text-white overflow-hidden">
+              {(session?.user as { image?: string })?.image ? (
+                <img src={(session?.user as { image?: string }).image!} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                session?.user?.name?.[0]?.toUpperCase() || "A"
+              )}
             </div>
 
             <button

@@ -10,6 +10,7 @@ type User = {
   email: string
   role: string
   status: string
+  avatar?: string
   createdAt: string
 }
 
@@ -276,10 +277,14 @@ export default function UsersClient({ initialUsers }: { initialUsers: User[] }) 
                 <tr key={user.id}>
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-semibold text-xs">
-                          {user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
-                        </span>
+                      <div className="w-9 h-9 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {user.avatar ? (
+                          <img src={user.avatar} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <span className="text-white font-semibold text-xs">
+                            {user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
+                          </span>
+                        )}
                       </div>
                       <div>
                         {editingId === user.id ? (
