@@ -35,6 +35,7 @@ export default function LoginPage() {
   // cleanup timer
   useEffect(() => () => { if (resendRef.current) clearInterval(resendRef.current) }, [])
 
+
   // --- helpers ---
   const toast = (msg: string, type: "success" | "error" | "info" = "info") => {
     const container = document.getElementById("toast-container")
@@ -60,11 +61,11 @@ export default function LoginPage() {
         router.refresh()
       } else {
         setLoading(false)
-        setError(result?.error || "Invalid credentials")
+        setError(result?.error || "Invalid email or password")
       }
     } catch (err) {
       setLoading(false)
-      setError(err instanceof Error ? err.message : "Connection failed. Check your network.")
+      setError("Invalid email or password")
     }
   }
 
@@ -204,7 +205,7 @@ export default function LoginPage() {
         <div className="max-w-[520px]">
           <div className="flex items-center gap-3 mb-14">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/30">
-              <i className="fa-solid fa-bolt text-white text-lg" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white"/></svg>
             </div>
             <span className="font-heading font-bold text-2xl text-white tracking-tight">One Service 𝓑𝓓</span>
           </div>
@@ -220,13 +221,19 @@ export default function LoginPage() {
 
           <div className="space-y-1">
             {[
-              { icon: "fa-shield-halved", iconBg: "bg-brand-500/10", iconColor: "text-brand-400", title: "Enterprise Security", desc: "End-to-end encryption and role-based access" },
-              { icon: "fa-chart-line", iconBg: "bg-emerald-500/10", iconColor: "text-emerald-400", title: "Real-time Analytics", desc: "Monitor licenses, users, and revenue" },
-              { icon: "fa-key", iconBg: "bg-sky-500/10", iconColor: "text-sky-400", title: "License Management", desc: "Create, reset, and revoke keys in seconds" },
+              { icon: "shield", iconBg: "bg-brand-500/10", iconColor: "text-brand-400", title: "Enterprise Security", desc: "End-to-end encryption and role-based access" },
+              { icon: "chart", iconBg: "bg-emerald-500/10", iconColor: "text-emerald-400", title: "Real-time Analytics", desc: "Monitor licenses, users, and revenue" },
+              { icon: "key", iconBg: "bg-sky-500/10", iconColor: "text-sky-400", title: "License Management", desc: "Create, reset, and revoke keys in seconds" },
             ].map((item, i) => (
               <div key={i} className="flex items-start gap-4 py-4">
                 <div className={`w-11 h-11 rounded-xl ${item.iconBg} flex items-center justify-center flex-shrink-0`}>
-                  <i className={`fa-solid ${item.icon} ${item.iconColor}`} />
+                  {item.icon === "shield" ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor}/></svg>
+                  ) : item.icon === "chart" ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 20V10M12 20V4M6 20V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor}/></svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 2L2 21M21 2L15 22L12 12L2 9L21 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor}/></svg>
+                  )}
                 </div>
                 <div>
                   <div className="text-white font-medium text-sm">{item.title}</div>
@@ -247,7 +254,7 @@ export default function LoginPage() {
           <div>
             <div className="text-center mb-8">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-400 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-brand-500/20">
-                <i className="fa-solid fa-bolt text-white text-xl" />
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white"/></svg>
               </div>
               <h2 className="font-heading font-bold text-2xl text-white mb-1">Welcome back</h2>
               <p className="text-white/30 text-sm">Sign in to your admin dashboard</p>
@@ -255,14 +262,14 @@ export default function LoginPage() {
 
             {error && (
               <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-center gap-2.5">
-                <i className="fa-solid fa-circle-exclamation" /><span>{error}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 8V12M12 16H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg><span>{error}</span>
               </div>
             )}
 
             <div className="mb-4">
               <label className={labelClass}>Email</label>
               <div className="relative">
-                <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-white/20 text-sm" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M22 7L12 13L2 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputClass} pl-11`} placeholder="admin@nexus.io" onKeyDown={(e) => e.key === "Enter" && handleLogin()} />
               </div>
             </div>
@@ -273,7 +280,7 @@ export default function LoginPage() {
                 {/* forgot password button removed */}
               </div>
               <div className="relative">
-                <i className="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/20 text-sm" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={`${inputClass} pl-11 pr-11`} placeholder="Enter your password" onKeyDown={(e) => e.key === "Enter" && handleLogin()} />
               </div>
             </div>
@@ -289,7 +296,7 @@ export default function LoginPage() {
                   onClick={exitForgot}
                   className="mb-4 text-sm text-white/40 hover:text-white/60 transition-colors flex items-center gap-1.5 cursor-pointer bg-transparent border-none outline-none"
                 >
-                  <i className="fa-solid fa-arrow-left text-xs" /> Back to sign in
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> Back to sign in
                 </button>
 
                 {forgotStep === 1 && (
@@ -298,7 +305,7 @@ export default function LoginPage() {
                     <div className="mb-5">
                       <label className={labelClass}>Email</label>
                       <div className="relative">
-                        <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-white/20 text-sm" />
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M22 7L12 13L2 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
                         <input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} className={`${inputClass} pl-11`} placeholder="admin@nexus.io" onKeyDown={(e) => e.key === "Enter" && handleForgotSendCode()} />
                       </div>
                     </div>
@@ -359,7 +366,7 @@ export default function LoginPage() {
                 {forgotStep === 3 && (
                   <div className="text-center py-6">
                     <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-                      <i className="fa-solid fa-check text-emerald-400 text-xl" />
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="#34D399" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </div>
                     <p className="text-white text-sm font-medium mb-1">Password reset successful</p>
                     <p className="text-white/40 text-sm mb-5">You can now sign in with your new password.</p>

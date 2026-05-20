@@ -12,6 +12,22 @@ export async function requireAuth() {
   if (!session?.user?.id) {
     redirect("/login")
   }
+  // Skip DB lookup for OAuth users (UUID-based ids) or if valid ObjectId
+  const isValidObjectId = /^[a-f\d]{24}$/i.test(session.user.id)
+  if (!isValidObjectId) {
+    return {
+      id: session.user.id,
+      name: session.user.name ?? "",
+      email: session.user.email ?? "",
+      password: "",
+      avatar: session.user.image ?? "",
+      role: ((session.user as { role?: string }).role ?? "user") as UserRole,
+      status: "active" as const,
+      hwid: "",
+      ipAddress: "",
+      createdAt: "",
+    }
+  }
   const user = await getUserById(session.user.id)
   if (!user) {
     redirect("/login")

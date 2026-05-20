@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose"
 
 export interface ILicenseKey extends Document {
   key: string
-  plan: "Basic" | "Pro" | "Enterprise"
+  plan: string
   status: "active" | "expired" | "revoked" | "used"
   userId: mongoose.Types.ObjectId | null
   assignedTo: string | null
@@ -19,7 +19,6 @@ const LicenseKeySchema = new Schema<ILicenseKey>(
     key: { type: String, required: true, unique: true, trim: true },
     plan: {
       type: String,
-      enum: ["Basic", "Pro", "Enterprise"],
       default: "Basic",
     },
     status: {

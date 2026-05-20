@@ -45,6 +45,8 @@ export async function getUserByEmail(email: string) {
 
 export async function getUserById(id: string) {
   await connectDB()
+  // Return null for non-ObjectId values (e.g. Google OAuth UUIDs)
+  if (!/^[a-f\d]{24}$/i.test(id)) return null
   const u = await User.findById(id).lean()
   if (!u) return null
 
@@ -95,6 +97,11 @@ export async function createUser(data: {
 export async function updateUserRole(id: string, role: UserRole) {
   await connectDB()
   await User.findByIdAndUpdate(id, { role })
+}
+
+export async function updateUser(id: string, updates: Record<string, string>) {
+  await connectDB()
+  await User.findByIdAndUpdate(id, updates)
 }
 
 export async function banUser(id: string) {
@@ -157,7 +164,7 @@ export async function getLicenseKeysByUser(userId: string) {
 
 export async function createLicenseKey(data: {
   key: string
-  plan: "Basic" | "Pro" | "Enterprise"
+  plan: string
   expiresAt: Date
   assignedTo?: string | null
 }) {

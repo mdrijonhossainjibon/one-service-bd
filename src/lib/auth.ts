@@ -13,17 +13,18 @@ export const authConfig: NextAuthConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
+        if (!credentials?.email || !credentials?.password) throw new Error("Email and password are required")
 
         const email = credentials.email as string
         const password = credentials.password as string
 
         try {
-          const user = await getUserByEmail(email)
-          if (!user) return null
+          const user = await getUserByEmail(email);
+
+          if (!user) throw new Error("No account found with this email")
 
           const passwordMatch = await bcrypt.compare(password, user.password)
-          if (!passwordMatch) return null
+          if (!passwordMatch) throw new Error("Invalid password")
 
           return {
             id: user.id,
@@ -32,8 +33,8 @@ export const authConfig: NextAuthConfig = {
             image: user.avatar,
             role: user.role,
           }
-        } catch {
-          return null
+        } catch (err) {
+          throw err
         }
       },
     }),
@@ -45,10 +46,18 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
-        token.role = (user as { role?: string }).role ?? "user"
+        // Always find user by email to get the correct MongoDB _id
+        if (user.email) {
+          const dbUser = await getUserByEmail(user.email)
+          if (dbUser) {
+            token.id = dbUser.id
+            token.role = dbUser.role ?? "user"
+          } else {
+            token.id = user.id
+            token.role = (user as { role?: string }).role ?? "user"
+          }
+        } 
       } else if (token.id) {
-        // Refresh role from DB on every JWT access
         const dbUser = await getUserById(token.id as string)
         token.role = dbUser?.role ?? "user"
       }

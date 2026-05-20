@@ -125,8 +125,13 @@ export default function UsersClient({ initialUsers }: { initialUsers: User[] }) 
       })
 
       if (!res.ok) {
-        const err = await res.json()
-        setError(err.error || "Failed to update user")
+        const text = await res.text()
+        try {
+          const err = JSON.parse(text)
+          setError(err.error || "Failed to update user")
+        } catch {
+          setError("Failed to update user")
+        }
         return
       }
 
@@ -414,9 +419,18 @@ export default function UsersClient({ initialUsers }: { initialUsers: User[] }) 
                 <div>
                   <label className="block text-sm font-medium text-surface-600 mb-1.5">Role</label>
                   <select name="role" defaultValue={modal.user?.role || "user"} className="form-select">
-                    <option value="superadmin">Super Admin</option>
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
+                    {(session?.user?.role as UserRole) === "superadmin" ? (
+                      <>
+                        <option value="superadmin">Super Admin</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>

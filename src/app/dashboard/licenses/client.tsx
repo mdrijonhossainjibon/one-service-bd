@@ -50,6 +50,7 @@ export default function LicensesClient({ initialLicenses }: { initialLicenses: L
   const [error, setError] = useState("")
   const [userSearch, setUserSearch] = useState("")
   const [selectedUser, setSelectedUser] = useState("")
+  const [plans, setPlans] = useState<{ _id: string; name: string; price: number }[]>([])
 
   const filtered = licenses.filter(
     (l) =>
@@ -79,6 +80,10 @@ export default function LicensesClient({ initialLicenses }: { initialLicenses: L
     fetch("/api/users")
       .then((r) => r.ok ? r.json() : [])
       .then((data) => setUsers(data))
+      .catch(() => {})
+    fetch("/api/plans")
+      .then((r) => r.ok ? r.json() : { plans: [] })
+      .then((data) => setPlans(data.plans || []))
       .catch(() => {})
   }, [refreshLicenses])
 
@@ -304,9 +309,12 @@ export default function LicensesClient({ initialLicenses }: { initialLicenses: L
                   </td>
                   <td>
                     <span className={`badge ${
-                      lic.plan === "Enterprise" ? "bg-sky-50 text-sky-700" :
-                      lic.plan === "Pro" ? "bg-brand-50 text-brand-700" :
-                      "bg-surface-100 text-surface-600"
+                      (() => {
+                        const p = plans.find((pl) => pl.name === lic.plan)
+                        if (!p) return "bg-surface-100 text-surface-600"
+                        const colors = ["bg-brand-50 text-brand-700", "bg-sky-50 text-sky-700", "bg-amber-50 text-amber-700", "bg-rose-50 text-rose-700", "bg-emerald-50 text-emerald-700", "bg-violet-50 text-violet-700"]
+                        return colors[plans.indexOf(p) % colors.length]
+                      })()
                     }`}>{lic.plan}</span>
                   </td>
                   <td>
@@ -354,7 +362,16 @@ export default function LicensesClient({ initialLicenses }: { initialLicenses: L
               ))}
               {paginated.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-surface-400 text-sm">No licenses found</td>
+                  <td colSpan={8} className="text-center py-16">
+                    <div className="flex flex-col items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-200 mb-4">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                      <p className="text-sm font-medium text-surface-400 mb-1">No licenses found</p>
+                      <p className="text-xs text-surface-300">Create a new license key to get started</p>
+                    </div>
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -447,11 +464,24 @@ export default function LicensesClient({ initialLicenses }: { initialLicenses: L
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-surface-600 mb-1.5">Plan</label>
-                  <select name="plan" className="form-select" defaultValue="Pro">
-                    <option value="Basic">Basic</option>
-                    <option value="Pro">Pro</option>
-                    <option value="Enterprise">Enterprise</option>
-                  </select>
+                  {plans.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-surface-200 rounded-xl bg-surface-50/50">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-surface-300 mb-3">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="18" x2="12" y2="12"/>
+                        <line x1="9" y1="15" x2="15" y2="15"/>
+                      </svg>
+                      <p className="text-sm font-medium text-surface-400 mb-1">No plans available</p>
+                      <p className="text-xs text-surface-300">Create a plan first from the Plans page</p>
+                    </div>
+                  ) : (
+                    <select name="plan" className="form-select" defaultValue={plans[0]?.name || "Pro"}>
+                      {plans.map((p) => (
+                        <option key={p._id} value={p.name}>{p.name}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-surface-600 mb-1.5">Duration</label>
@@ -543,11 +573,23 @@ export default function LicensesClient({ initialLicenses }: { initialLicenses: L
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-surface-600 mb-1.5">Plan</label>
-                  <select name="plan" className="form-select" defaultValue={modal.license?.plan || "Pro"}>
-                    <option value="Basic">Basic</option>
-                    <option value="Pro">Pro</option>
-                    <option value="Enterprise">Enterprise</option>
-                  </select>
+                  {plans.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-surface-200 rounded-xl bg-surface-50/50">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-surface-300 mb-2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="18" x2="12" y2="12"/>
+                        <line x1="9" y1="15" x2="15" y2="15"/>
+                      </svg>
+                      <p className="text-sm font-medium text-surface-400">No plans available</p>
+                    </div>
+                  ) : (
+                    <select name="plan" className="form-select" defaultValue={modal.license?.plan || plans[0]?.name}>
+                      {plans.map((p) => (
+                        <option key={p._id} value={p.name}>{p.name}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-surface-600 mb-1.5">Status</label>
