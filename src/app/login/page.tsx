@@ -41,9 +41,8 @@ export default function LoginPage() {
     const container = document.getElementById("toast-container")
     if (!container) return
     const t = document.createElement("div")
-    t.className = `fixed bottom-6 right-6 px-5 py-3 rounded-xl text-sm font-medium shadow-2xl z-[100] transition-all duration-300 ${
-      type === "success" ? "bg-emerald-600 text-white" : type === "error" ? "bg-rose-600 text-white" : "bg-brand-500 text-white"
-    }`
+    t.className = `fixed bottom-6 right-6 px-5 py-3 rounded-xl text-sm font-medium shadow-2xl z-[100] transition-all duration-300 ${type === "success" ? "bg-emerald-600 text-white" : type === "error" ? "bg-rose-600 text-white" : "bg-brand-500 text-white"
+      }`
     t.textContent = msg
     document.body.appendChild(t)
     setTimeout(() => { t.style.opacity = "0"; setTimeout(() => t.remove(), 300) }, 3000)
@@ -55,13 +54,19 @@ export default function LoginPage() {
     if (!email || !password) { setError("Enter email and password"); return }
     setLoading(true)
     try {
-      const result = await signIn("credentials", { email, password, redirect: false })
+      const result = await signIn("credentials", { email, password, redirect: false });
+
+
+
+      if (result?.code === "credentials") {
+        setLoading(false)
+        const msg = result?.error === "CredentialsSignin" ? "Invalid email or password" : result?.error || "Invalid email or password"
+        setError(msg)
+      }
+
       if (result?.ok) {
         router.push("/dashboard")
         router.refresh()
-      } else {
-        setLoading(false)
-        setError(result?.error || "Invalid email or password")
       }
     } catch (err) {
       setLoading(false)
@@ -205,7 +210,7 @@ export default function LoginPage() {
         <div className="max-w-[520px]">
           <div className="flex items-center gap-3 mb-14">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/30">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white" /></svg>
             </div>
             <span className="font-heading font-bold text-2xl text-white tracking-tight">One Service 𝓑𝓓</span>
           </div>
@@ -228,11 +233,11 @@ export default function LoginPage() {
               <div key={i} className="flex items-start gap-4 py-4">
                 <div className={`w-11 h-11 rounded-xl ${item.iconBg} flex items-center justify-center flex-shrink-0`}>
                   {item.icon === "shield" ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor}/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor} /></svg>
                   ) : item.icon === "chart" ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 20V10M12 20V4M6 20V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor}/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 20V10M12 20V4M6 20V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor} /></svg>
                   ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 2L2 21M21 2L15 22L12 12L2 9L21 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor}/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 2L2 21M21 2L15 22L12 12L2 9L21 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={item.iconColor} /></svg>
                   )}
                 </div>
                 <div>
@@ -254,7 +259,7 @@ export default function LoginPage() {
           <div>
             <div className="text-center mb-8">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-400 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-brand-500/20">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white" /></svg>
               </div>
               <h2 className="font-heading font-bold text-2xl text-white mb-1">Welcome back</h2>
               <p className="text-white/30 text-sm">Sign in to your admin dashboard</p>
@@ -262,14 +267,14 @@ export default function LoginPage() {
 
             {error && (
               <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-center gap-2.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 8V12M12 16H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg><span>{error}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M12 8V12M12 16H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg><span>{error}</span>
               </div>
             )}
 
             <div className="mb-4">
               <label className={labelClass}>Email</label>
               <div className="relative">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M22 7L12 13L2 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M22 7L12 13L2 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputClass} pl-11`} placeholder="admin@nexus.io" onKeyDown={(e) => e.key === "Enter" && handleLogin()} />
               </div>
             </div>
@@ -280,7 +285,7 @@ export default function LoginPage() {
                 {/* forgot password button removed */}
               </div>
               <div className="relative">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={`${inputClass} pl-11 pr-11`} placeholder="Enter your password" onKeyDown={(e) => e.key === "Enter" && handleLogin()} />
               </div>
             </div>
@@ -296,7 +301,7 @@ export default function LoginPage() {
                   onClick={exitForgot}
                   className="mb-4 text-sm text-white/40 hover:text-white/60 transition-colors flex items-center gap-1.5 cursor-pointer bg-transparent border-none outline-none"
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> Back to sign in
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg> Back to sign in
                 </button>
 
                 {forgotStep === 1 && (
@@ -305,7 +310,7 @@ export default function LoginPage() {
                     <div className="mb-5">
                       <label className={labelClass}>Email</label>
                       <div className="relative">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M22 7L12 13L2 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M22 7L12 13L2 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
                         <input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} className={`${inputClass} pl-11`} placeholder="admin@nexus.io" onKeyDown={(e) => e.key === "Enter" && handleForgotSendCode()} />
                       </div>
                     </div>
@@ -366,7 +371,7 @@ export default function LoginPage() {
                 {forgotStep === 3 && (
                   <div className="text-center py-6">
                     <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="#34D399" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="#34D399" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </div>
                     <p className="text-white text-sm font-medium mb-1">Password reset successful</p>
                     <p className="text-white/40 text-sm mb-5">You can now sign in with your new password.</p>
@@ -383,7 +388,7 @@ export default function LoginPage() {
                 </div>
 
                 <button onClick={handleGoogleSignIn} disabled={loading} className={`${btnGoogle} ${loading ? "opacity-80" : ""}`}>
-                  <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg>
                   <span>Sign in with Google</span>
                 </button>
               </>

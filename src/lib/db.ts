@@ -101,6 +101,9 @@ export async function updateUserRole(id: string, role: UserRole) {
 
 export async function updateUser(id: string, updates: Record<string, string>) {
   await connectDB()
+  if (updates.password) {
+    updates.password = await bcrypt.hash(updates.password, 12)
+  }
   await User.findByIdAndUpdate(id, updates)
 }
 

@@ -13,28 +13,23 @@ export const authConfig: NextAuthConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) throw new Error("Email and password are required")
+        if (!credentials?.email || !credentials?.password) return null
 
         const email = credentials.email as string
         const password = credentials.password as string
 
-        try {
-          const user = await getUserByEmail(email);
+        const user = await getUserByEmail(email);
+        if (!user) return null
 
-          if (!user) throw new Error("No account found with this email")
+        const passwordMatch = await bcrypt.compare(password, user.password)
+        if (!passwordMatch) return null
 
-          const passwordMatch = await bcrypt.compare(password, user.password)
-          if (!passwordMatch) throw new Error("Invalid password")
-
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            image: user.avatar,
-            role: user.role,
-          }
-        } catch (err) {
-          throw err
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.avatar,
+          role: user.role,
         }
       },
     }),
@@ -51,16 +46,10 @@ export const authConfig: NextAuthConfig = {
           const dbUser = await getUserByEmail(user.email)
           if (dbUser) {
             token.id = dbUser.id
-            token.role = dbUser.role ?? "user"
-          } else {
-            token.id = user.id
-            token.role = (user as { role?: string }).role ?? "user"
-          }
+            token.role = dbUser.role 
+          } 
         } 
-      } else if (token.id) {
-        const dbUser = await getUserById(token.id as string)
-        token.role = dbUser?.role ?? "user"
-      }
+      } 
       return token
     },
     async session({ session, token }) {

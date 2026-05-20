@@ -15,7 +15,7 @@ type User = {
 
 type ModalState = {
   open: boolean
-  mode: "add" | "edit" | "delete" | "ban"
+  mode: "add" | "edit" | "delete" | "ban" | "password"
   user?: User
 }
 
@@ -202,6 +202,32 @@ export default function UsersClient({ initialUsers }: { initialUsers: User[] }) 
     setEditingId(null)
   }
 
+  const handlePasswordChange = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError("")
+    const form = new FormData(e.currentTarget)
+    const newPassword = form.get("password") as string
+    const confirm = form.get("confirm") as string
+
+    if (newPassword.length < 8) { setError("Password must be at least 8 characters"); return }
+    if (newPassword !== confirm) { setError("Passwords do not match"); return }
+
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/users/${modal.user!.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: newPassword }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || "Failed to update password"); setLoading(false); return }
+
+      setModal({ open: false, mode: "password" })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -318,6 +344,13 @@ export default function UsersClient({ initialUsers }: { initialUsers: User[] }) 
                           title="Edit"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        </button>
+                        <button
+                          className="action-btn action-btn-edit"
+                          onClick={() => setModal({ open: true, mode: "password", user })}
+                          title="Change Password"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         </button>
                         {user.status === "active" ? (
                           <button
@@ -531,6 +564,60 @@ export default function UsersClient({ initialUsers }: { initialUsers: User[] }) 
                 {loading ? "Updating..." : modal.user?.status === "active" ? "Ban" : "Activate"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Password Change Modal */}
+      {modal.open && modal.mode === "password" && (
+        <div className="modal-overlay open" onClick={() => setModal({ open: false, mode: "password" })}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b border-surface-100">
+              <div className="flex items-center justify-between">
+                <h3 className="font-heading font-bold text-lg text-[#1F2028]">Change Password</h3>
+                <button className="btn-ghost btn-icon" onClick={() => setModal({ open: false, mode: "password" })}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-400"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            </div>
+            <form onSubmit={handlePasswordChange}>
+              <div className="p-6 space-y-4">
+                {error && (
+                  <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-sm flex items-center gap-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>{error}</span>
+                  </div>
+                )}
+                <div>
+                  <label className="form-label">New Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    required
+                    minLength={8}
+                    className="form-input"
+                    placeholder="Enter new password"
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Confirm Password</label>
+                  <input
+                    type="password"
+                    name="confirm"
+                    required
+                    minLength={8}
+                    className="form-input"
+                    placeholder="Re-enter new password"
+                  />
+                </div>
+              </div>
+              <div className="p-6 border-t border-surface-100 flex justify-end gap-3">
+                <button type="button" className="btn btn-outline" onClick={() => setModal({ open: false, mode: "password" })}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? "Updating..." : "Update Password"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
