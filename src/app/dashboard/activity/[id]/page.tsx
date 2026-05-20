@@ -112,7 +112,7 @@ export default function ActivityDetailPage() {
   const fmt = formatFull(log.timestamp)
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       {/* Back link */}
       <Link
         href="/dashboard/activity"

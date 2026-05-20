@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 
 function generateOtp() {
@@ -12,6 +12,7 @@ function generateOtp() {
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   // --- fields ---
   const [email, setEmail] = useState("")
@@ -31,6 +32,13 @@ export default function LoginPage() {
   const [pwStrength, setPwStrength] = useState({ pct: "0%", color: "transparent", label: "", labelColor: "" })
   const resendRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  // Show error from URL params (e.g. ?error=AccessDenied)
+  useEffect(() => {
+    const err = searchParams.get("error")
+    if (err === "AccessDenied") setError("Access denied. Only admins can log in.")
+    else if (err === "CredentialsSignin") setError("Invalid email or password")
+  }, [searchParams])
 
   // cleanup timer
   useEffect(() => () => { if (resendRef.current) clearInterval(resendRef.current) }, [])

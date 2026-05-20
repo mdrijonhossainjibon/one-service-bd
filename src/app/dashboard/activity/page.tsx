@@ -184,8 +184,8 @@ export default function ActivityPage() {
         </div>
       </div>
 
-      {/* Activity list */}
-      <div className="space-y-1.5">
+      {/* Activity table */}
+      <div className="rounded-xl border border-surface-200 bg-white dark:border-panel-200 dark:bg-panel-300 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="flex items-center gap-3 text-sm text-surface-400 dark:text-surface-300">
@@ -201,51 +201,41 @@ export default function ActivityPage() {
             <svg className="h-12 w-12 mb-4 text-surface-200 dark:text-surface-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
-            <svg className="h-10 w-10 -mt-2 mb-3 text-surface-300 dark:text-surface-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
             <p className="text-sm">No activity found</p>
           </div>
         ) : (
-          logs.map((log, idx) => {
-            const cfg = typeConfig[log.type]
-            const isLast = idx === logs.length - 1
-            return (
-              <Link key={log.id} href={`/dashboard/activity/${log.id}`} className="group relative flex items-start gap-4 rounded-xl border border-surface-100 bg-white p-4 transition hover:border-surface-200 hover:shadow-sm dark:border-panel-200 dark:bg-panel-300 dark:hover:border-surface-500/30">
-                {/* Timeline icon + line */}
-                <div className="relative flex flex-col items-center pt-1">
-                  <div className={`flex h-7 w-7 items-center justify-center rounded-full ring-2 ring-white ${cfg.bg} ${cfg.dot} bg-opacity-100 dark:ring-panel-300`}>
-                    {cfg.icon}
-                  </div>
-                  {!isLast && (
-                    <div className="mt-1 w-px flex-1 bg-surface-200 dark:bg-panel-100" style={{ minHeight: 16 }} />
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="truncate text-sm font-semibold text-[#1F2028] dark:text-white">{log.action}</span>
-                      <span className={`hidden xs:inline rounded-md px-1.5 py-0.5 text-[11px] font-medium ${cfg.bg} ${cfg.dot.replace("bg-", "text-")}`}>
-                        {cfg.label}
-                      </span>
-                    </div>
-                    <span className="shrink-0 text-xs text-surface-400 dark:text-surface-500">{timeAgo(log.timestamp)}</span>
-                  </div>
-                  <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
-                    {log.details || <span className="italic">No details</span>}
-                  </p>
-                  <span className="mt-1 inline-block text-xs text-surface-400 dark:text-surface-500">
-                    by {log.user}
-                  </span>
-                </div>
-                <svg className="h-4 w-4 shrink-0 self-center text-surface-300 transition group-hover:text-brand-500 dark:text-surface-600 dark:group-hover:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-            </Link>
-            )
-          })
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-surface-100 dark:border-panel-200">
+                  <th className="text-left text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 px-5 py-3.5">Type</th>
+                  <th className="text-left text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 px-5 py-3.5">Action</th>
+                  <th className="text-left text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 px-5 py-3.5">User</th>
+                  <th className="text-left text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 px-5 py-3.5">Details</th>
+                  <th className="text-right text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 px-5 py-3.5">Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map((log) => {
+                  const cfg = typeConfig[log.type]
+                  return (
+                    <tr key={log.id} className="border-b border-surface-50 dark:border-panel-200 last:border-0 hover:bg-surface-50/50 dark:hover:bg-white/[0.02] transition cursor-pointer" onClick={() => window.location.href = `/dashboard/activity/${log.id}`}>
+                      <td className="px-5 py-3.5">
+                        <div className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${cfg.bg}`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
+                          {cfg.label}
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5 text-sm font-medium text-[#1F2028] dark:text-white">{log.action}</td>
+                      <td className="px-5 py-3.5 text-sm text-surface-500 dark:text-surface-400">{log.user}</td>
+                      <td className="px-5 py-3.5 text-sm text-surface-400 dark:text-surface-500 max-w-[240px] truncate">{log.details || <span className="italic">&mdash;</span>}</td>
+                      <td className="px-5 py-3.5 text-right text-sm text-surface-400 dark:text-surface-500 whitespace-nowrap">{formatTime(log.timestamp)}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

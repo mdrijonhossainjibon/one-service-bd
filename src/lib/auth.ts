@@ -24,6 +24,9 @@ export const authConfig: NextAuthConfig = {
         const passwordMatch = await bcrypt.compare(password, user.password)
         if (!passwordMatch) return null
 
+        // Only super_admin and admin roles can log in
+        if (user.role !== 'superadmin' && user.role !== "admin") return null
+
         return {
           id: user.id,
           name: user.name,
@@ -42,11 +45,13 @@ export const authConfig: NextAuthConfig = {
     async signIn({ account, profile }) {
       // Google OAuth — find or create user, save avatar
       if (account?.provider === "google" && profile?.email) {
-        await createUserFromOAuth({
+        const dbUser = await createUserFromOAuth({
           name: (profile.name as string) ?? profile.email.split("@")[0],
           email: profile.email,
           image: (profile as { picture?: string }).picture,
         })
+        // Only superadmin and admin roles can log in
+        if (dbUser.role !== "superadmin" && dbUser.role !== "admin") return false
       }
       return true
     },
@@ -73,6 +78,7 @@ export const authConfig: NextAuthConfig = {
   },
   pages: {
     signIn: "/login",
+    error: "/login",
   },
   session: {
     strategy: "jwt",
