@@ -209,8 +209,8 @@ export default function LoginPage() {
       <div className="hidden lg:flex flex-1 flex-col justify-center px-16 relative z-10">
         <div className="max-w-[520px]">
           <div className="flex items-center gap-3 mb-14">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/30">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white" /></svg>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="h-full w-full object-contain" />
             </div>
             <span className="font-heading font-bold text-2xl text-white tracking-tight">One Service 𝓑𝓓</span>
           </div>
@@ -258,8 +258,8 @@ export default function LoginPage() {
         >
           <div>
             <div className="text-center mb-8">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-400 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-brand-500/20">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white" /></svg>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 overflow-hidden">
+                <img src="/logo.png" alt="Logo" className="h-full w-full object-contain" />
               </div>
               <h2 className="font-heading font-bold text-2xl text-white mb-1">Welcome back</h2>
               <p className="text-white/30 text-sm">Sign in to your admin dashboard</p>

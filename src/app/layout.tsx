@@ -18,6 +18,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "One Service 𝓑𝓓 — Admin Dashboard",
   description: "Enterprise-grade admin panel for license management, user control, and real-time analytics.",
+  icons: { icon: "/logo.png", apple: "/logo.png" },
 }
 
 export default function RootLayout({
